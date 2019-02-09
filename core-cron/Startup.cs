@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Core.Cron.Data;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Core.Cron.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -44,7 +39,7 @@ namespace Core.Cron
 
 			services.AddSwaggerGen(s =>
 			{
-				s.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "Core.cron docs", Version = "v1" });
+				s.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "Cron Monitor docs", Version = "v1" });
 			});
 
 		}
@@ -80,7 +75,7 @@ namespace Core.Cron
 
 			app.UseSwaggerUI(c =>
 			{
-				c.SwaggerEndpoint("/swagger/v1/swagger.json", "Core.Cron Api v1");
+				c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cron Monitor Api v1");
 			});
 		}
 	}
