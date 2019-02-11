@@ -56,6 +56,7 @@ namespace Core.Cron.Data
 				entity.Property(s => s.DateAdded).IsRequired(true);
 				entity.Property(s => s.ServiceName).HasMaxLength(500).IsUnicode(false).IsRequired();
 				entity.Property(s => s.ServiceIdentifier).HasMaxLength(40).IsUnicode(false).IsRequired();
+				entity.Property(s => s.UpdateFrequency).IsRequired(false);
 				entity.HasIndex("ServiceName", "ServiceIdentifier").HasName("UK_ServiceName_ServiceIdentifier").IsUnique();
 			});
 

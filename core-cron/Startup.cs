@@ -42,6 +42,7 @@ namespace Core.Cron
 				s.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "Cron Monitor docs", Version = "v1" });
 			});
 
+			services.AddKendo();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

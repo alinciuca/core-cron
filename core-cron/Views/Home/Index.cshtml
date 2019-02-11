@@ -1,10 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Core.Cron.Data
-@using System.Linq
-@model IEnumerable<Service>
+@using Kendo.Mvc.UI
 
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@Html.AntiForgeryToken()
 
 @{
 	ViewData["Title"] = "Home Page";
@@ -16,15 +17,44 @@
 }
 else
 {
-	if(Model?.Any() != true)
-	{
-		return;
-	}
-	<ul>
-
-	@foreach(var item in Model)
-	{
-		<li>@item.ServiceName | @item.ServiceIdentifier</li>
-	}
-	</ul>
+	@(Html.Kendo().Grid<Service>().Name("grid")
+					.Sortable()
+					.Filterable()
+					.Editable()
+					.Scrollable()
+					.Selectable()
+					.ToolBar(x => x.Create())
+					.Columns(columns =>
+					{
+						columns.Bound(col => col.ServiceId).Hidden();
+						columns.Bound(column => column.ServiceName).Width(200);
+						columns.Bound(column => column.ServiceIdentifier).Width(400).Sortable(false);
+						columns.Bound(column => column.DateAdded).Width(400).Filterable(false);
+						columns.Command(column =>
+						{
+							column.Edit();
+							column.Destroy();
+						});
+					})
+					.DataSource(ds =>
+					ds.Ajax()
+					.Sort(s => s.Add("DateAdded").Descending())
+					.Read(r => r.Action("Read", "Home").Data("forgeryToken"))
+					.Create(r => r.Action("Create", "Home").Data("forgeryToken"))
+					.Model(m =>
+					{
+						m.Id(id => id.ServiceId);
+						m.Field(s => s.ServiceName).Editable(true);
+						m.Field(s => s.ServiceIdentifier).Editable(false);
+						m.Field(s => s.DateAdded).Editable(false);
+					})
+						.PageSize(10)
+					)
+					.Pageable()
+	)
 }
+<script>
+    function forgeryToken() {
+        return kendo.antiForgeryTokens();
+    }
+</script>

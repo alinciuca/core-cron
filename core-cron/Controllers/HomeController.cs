@@ -1,8 +1,12 @@
 ﻿using Core.Cron.Data;
 using Core.Cron.Models;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -18,11 +22,30 @@ namespace Core.Cron.Controllers
 		}
 
 		[Authorize()]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-			var results = await _context.Service.ToListAsync().ConfigureAwait(false);
-            return View(results);
+            return View();
         }
+
+		public async Task<IActionResult> Read([DataSourceRequest] DataSourceRequest request)
+		{
+			var results = await _context.Service.ToDataSourceResultAsync(request).ConfigureAwait(false);
+			var json = JsonConvert.SerializeObject(results, Formatting.None);
+			return new ContentResult { Content = json, ContentType = "application/json" };
+		}
+
+		public async Task<IActionResult> Create([DataSourceRequest] DataSourceRequest request, Service service)
+		{
+			service.ServiceIdentifier = Guid.NewGuid().ToString();
+			service.DateAdded = DateTime.Now;
+
+			await _context.Service.AddAsync(service).ConfigureAwait(false);
+			await _context.SaveChangesAsync().ConfigureAwait(false);
+			var result = await new [] { service }.ToDataSourceResultAsync(request).ConfigureAwait(false);
+			var json = JsonConvert.SerializeObject(result);
+
+			return new ContentResult{ Content = json, ContentType = "application/json" };
+		}
 
         public IActionResult Privacy()
         {
