@@ -14,8 +14,6 @@ namespace Core.Cron.Data
 		public string ServiceIdentifier { get; set; }
         public DateTimeOffset DateAdded { get; set; }
 		public TimeSpan? UpdateFrequency { get; set; }
-
-		[JsonIgnore]
 		public byte[] RowVersion { get; set; }
 
 		[JsonIgnore]
