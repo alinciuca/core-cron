@@ -1,5 +1,4 @@
 ﻿using Core.Cron.Data;
-using Core.Cron.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -17,28 +16,6 @@ namespace Core.Cron.Controllers
 		{
 			_context = context;
 		}
-
-		//[HttpPost("register")]
-		//public async Task<IActionResult> Register([FromBody] RegistrationDto dto)
-		//{
-		//	if (!ModelState.IsValid)
-		//	{
-		//		return BadRequest(ModelState);
-		//	}
-
-		//	var match = _context.Service.FirstOrDefault(s => s.ServiceName == dto.ServiceName);
-		//	if (match != null)
-		//	{
-		//		return BadRequest("Duplicate service description found! Please specify another name!");
-		//	}
-
-		//	var service = dto.ToService();
-
-		//	await _context.Service.AddAsync(service).ConfigureAwait(false);
-		//	await _context.SaveChangesAsync().ConfigureAwait(false);
-
-		//	return CreatedAtAction("Register", service.ServiceIdentifier);
-		//}
 
 		[HttpGet("notify")]
 		public async Task<IActionResult> Notify(string identifier)

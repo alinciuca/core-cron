@@ -32,19 +32,23 @@ namespace Core.Cron.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Read([DataSourceRequest] DataSourceRequest request)
 		{
-			var results = await _context.Service.ToDataSourceResultAsync(request).ConfigureAwait(false);
+			DataSourceResult results = await _context.ServiceView.ToDataSourceResultAsync(request).ConfigureAwait(false);
 			var json = JsonConvert.SerializeObject(results, Formatting.None);
 			return new ContentResult { Content = json, ContentType = Constants.JSON_MIME };
 		}
 
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([DataSourceRequest] DataSourceRequest request, Service service)
+		public async Task<IActionResult> Create([DataSourceRequest] DataSourceRequest request, ServiceView service)
 		{
-			service.ServiceIdentifier = Guid.NewGuid().ToString();
-			service.DateAdded = DateTime.Now;
-
-			await _context.Service.AddAsync(service).ConfigureAwait(false);
+			var newService = service.ToDbModel();
+			await _context.Service.AddAsync(newService).ConfigureAwait(false);
 			await _context.SaveChangesAsync().ConfigureAwait(false);
+			
+			service.ServiceId = newService.ServiceId;
+			service.ServiceIdentifier = newService.ServiceIdentifier;
+			service.DateAdded = newService.DateAdded;
+			service.RowVersion = newService.RowVersion;
+
 			var result = await new[] { service }.ToDataSourceResultAsync(request).ConfigureAwait(false);
 			var json = JsonConvert.SerializeObject(result);
 
@@ -52,7 +56,7 @@ namespace Core.Cron.Controllers
 		}
 
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Update([DataSourceRequest] DataSourceRequest request, Service service)
+		public async Task<IActionResult> Update([DataSourceRequest] DataSourceRequest request, ServiceView service)
 		{
 			var existingService = await _context.Service.FindAsync(service.ServiceId).ConfigureAwait(false);
 			if (existingService == null)
@@ -69,13 +73,14 @@ namespace Core.Cron.Controllers
 
 			existingService.ServiceName = service.ServiceName;
 			await _context.SaveChangesAsync().ConfigureAwait(false);
-			var result = await new[] { existingService }.ToDataSourceResultAsync(request).ConfigureAwait(false);
+			service.RowVersion = existingService.RowVersion;
+			var result = await new[] { service }.ToDataSourceResultAsync(request).ConfigureAwait(false);
 			var json = JsonConvert.SerializeObject(result);
 			return new ContentResult { Content = json, ContentType = Constants.JSON_MIME };
 		}
 
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Delete([DataSourceRequest] DataSourceRequest request, Service service)
+		public async Task<IActionResult> Delete([DataSourceRequest] DataSourceRequest request, ServiceView service)
 		{
 			var existingService = await _context.Service.FindAsync(service.ServiceId).ConfigureAwait(false);
 			if (existingService == null)

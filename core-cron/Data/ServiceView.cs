@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Core.Cron.Models
+namespace Core.Cron.Data
 {
-	public class ServiceViewModel
+	public class ServiceView
 	{
-		[Required]
-		[StringLength(500)]
+		public int ServiceId { get; set; }
 		public string ServiceName { get; set; }
-
 		public string ServiceIdentifier { get; set; }
-		public DateTime DateAdded { get; set; }
-		public int ServiceId { get; internal set; }
+		public DateTimeOffset DateAdded { get; set; }
 		public byte[] RowVersion { get; set; }
+		public DateTime LastUpdate { get; set; }
+		public int UpdateFrequencyInHours { get; set; }
 	}
 }

@@ -11,6 +11,7 @@ namespace Core.Cron.Data
 	{
 		public DbSet<Service> Service { get; set; }
 		public DbSet<Heartbeat> Heartbeat { get; set; }
+		public DbQuery<ServiceView> ServiceView{get;set;}
 
 		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
 			: base(options)
@@ -56,7 +57,6 @@ namespace Core.Cron.Data
 				entity.Property(s => s.DateAdded).IsRequired(true);
 				entity.Property(s => s.ServiceName).HasMaxLength(500).IsUnicode(false).IsRequired();
 				entity.Property(s => s.ServiceIdentifier).HasMaxLength(40).IsUnicode(false).IsRequired();
-				entity.Property(s => s.UpdateFrequency).IsRequired(false);
 				entity.HasIndex("ServiceName", "ServiceIdentifier").HasName("UK_ServiceName_ServiceIdentifier").IsUnique();
 			});
 
@@ -67,8 +67,9 @@ namespace Core.Cron.Data
 				entity.Property(s => s.RowVersion).IsRequired().IsRowVersion();
 				entity.Property(s => s.ServiceId).IsRequired();
 				entity.Property(s => s.LastUpdate).IsRequired();
-				entity.HasIndex("HeartbeatId", "ServiceId").HasName("UK_Heartbeat_Service").IsUnique();
 			});
+
+			builder.Query<ServiceView>().ToView("vw_Service");
 		}
 	}
 }

@@ -17,19 +17,19 @@
 }
 else
 {
-	@(Html.Kendo().Grid<Service>().Name("grid")
+	@(Html.Kendo().Grid<ServiceView>().Name("grid")
 					.Sortable()
 					.Filterable()
 					.Editable()
 					.Scrollable()
-					.Selectable()
 					.ToolBar(x => x.Create())
 					.Columns(columns =>
 					{
 						columns.Bound(col => col.ServiceId).Hidden();
 						columns.Bound(column => column.ServiceName);
 						columns.Bound(column => column.ServiceIdentifier).Sortable(false);
-						columns.Bound(column => column.DateAdded).Filterable(false);
+						columns.Bound(column => column.UpdateFrequencyInHours);
+						columns.Bound(column => column.LastUpdate).Format("{0:dd/MM/yyyy hh:mm tt}");
 						columns.Command(column =>
 						{
 							column.Edit();
@@ -50,6 +50,8 @@ else
 						m.Field(s => s.ServiceIdentifier).Editable(false);
 						m.Field(s => s.DateAdded).Editable(false);
 						m.Field(s => s.RowVersion).Editable(false);
+						m.Field(s => s.LastUpdate).Editable(false);
+						m.Field(s => s.UpdateFrequencyInHours).Editable(false);
 					})
 						.PageSize(10)
 					)
