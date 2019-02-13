@@ -13,7 +13,7 @@ namespace Core.Cron.Data
         public DateTimeOffset LastUpdate { get; set; }
         public int UpdateFrequencyInMinutes { get; set; }
 
-        private int DeltaTime => (DateTimeOffset.Now - LastUpdate).Minutes;
+        private int DeltaTime => (DateTimeOffset.UtcNow - LastUpdate.ToUniversalTime()).Minutes;
 
         [NotMapped]
         public bool IsAlive => DeltaTime <= UpdateFrequencyInMinutes;
