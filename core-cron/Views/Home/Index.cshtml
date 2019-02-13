@@ -26,10 +26,9 @@ else
 					.Columns(columns =>
 					{
 						columns.Bound(col => col.ServiceId).Hidden();
-						columns.Bound(column => column.ServiceName);
+						columns.Bound(column => column.ServiceName).ClientTemplate("<div style='width=100%;margin: 0 auto' title='#=HeartbeatTooltip#'><span style='display: inline-block; background: #= HeartBeatColor#; width:10px; height: 10px'></span>&nbsp;#=ServiceName#</div>");
 						columns.Bound(column => column.ServiceIdentifier).Sortable(false);
-						columns.Bound(column => column.UpdateFrequencyInHours);
-						columns.Bound(column => column.LastUpdate).Format("{0:dd/MM/yyyy hh:mm tt}");
+						columns.Bound(column => column.UpdateFrequencyInMinutes).Title("Frequency(minutes)");
 						columns.Command(column =>
 						{
 							column.Edit();
@@ -51,7 +50,7 @@ else
 						m.Field(s => s.DateAdded).Editable(false);
 						m.Field(s => s.RowVersion).Editable(false);
 						m.Field(s => s.LastUpdate).Editable(false);
-						m.Field(s => s.UpdateFrequencyInHours).Editable(false);
+						m.Field(s => s.UpdateFrequencyInMinutes).Editable(false);
 					})
 						.PageSize(10)
 					)

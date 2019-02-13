@@ -31,7 +31,7 @@ namespace Core.Cron.Controllers
 				return NotFound();
 			}
 
-			await _context.Heartbeat.AddAsync(new Heartbeat { LastUpdate = DateTime.Now , ServiceId = match.ServiceId}).ConfigureAwait(false);
+			await _context.Heartbeat.AddAsync(new Heartbeat { LastUpdate = DateTimeOffset.Now , ServiceId = match.ServiceId}).ConfigureAwait(false);
 			await _context.SaveChangesAsync().ConfigureAwait(false);
 
 			return Ok();

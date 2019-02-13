@@ -4,14 +4,16 @@ using Core.Cron.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Core.Cron.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190213152947_ChangedFromDateTimeToOffset")]
+    partial class ChangedFromDateTimeToOffset
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +99,7 @@ namespace Core.Cron.Data.Migrations
                     b.ToTable("AspNetRoles");
 
                     b.HasData(
-                        new { Id = "dfee16f6-d8bc-4e6f-a514-46c4d15bc940", ConcurrencyStamp = "f7b4e14e-3bb0-4bab-aea9-4d696914f9fa", Name = "Admin", NormalizedName = "ADMIN" }
+                        new { Id = "2db302a1-f537-45fe-9caa-acded270c7f0", ConcurrencyStamp = "6bebf805-bb01-4a76-98d7-416e0841fa03", Name = "Admin", NormalizedName = "ADMIN" }
                     );
                 });
 
@@ -172,7 +174,7 @@ namespace Core.Cron.Data.Migrations
                     b.ToTable("AspNetUsers");
 
                     b.HasData(
-                        new { Id = "d8a87448-a3a2-4ed4-b9c5-77bc347e2599", AccessFailedCount = 0, ConcurrencyStamp = "44a53d8d-6035-4afd-8b54-c800846a29cb", Email = "su@a.co", EmailConfirmed = true, LockoutEnabled = false, NormalizedEmail = "SU@A.CO", NormalizedUserName = "SU@A.CO", PasswordHash = "AQAAAAEAACcQAAAAEDPh/9TXtg5lv5qsYzSuPVWRb5fa9uDaWkqoh9psjtCd86RpCuzC3QAOEa/1fFZKJA==", PhoneNumberConfirmed = false, SecurityStamp = "QI52LZEPNK5EOJJX6SYMYXGTLZMA5PSA", TwoFactorEnabled = false, UserName = "su@a.co" }
+                        new { Id = "1ba4f783-d416-4f73-b840-86ece38f0330", AccessFailedCount = 0, ConcurrencyStamp = "9666f58d-80ac-498b-a977-e539649980c0", Email = "su@a.co", EmailConfirmed = true, LockoutEnabled = false, NormalizedEmail = "SU@A.CO", NormalizedUserName = "SU@A.CO", PasswordHash = "AQAAAAEAACcQAAAAEDPh/9TXtg5lv5qsYzSuPVWRb5fa9uDaWkqoh9psjtCd86RpCuzC3QAOEa/1fFZKJA==", PhoneNumberConfirmed = false, SecurityStamp = "QI52LZEPNK5EOJJX6SYMYXGTLZMA5PSA", TwoFactorEnabled = false, UserName = "su@a.co" }
                     );
                 });
 
@@ -229,7 +231,7 @@ namespace Core.Cron.Data.Migrations
                     b.ToTable("AspNetUserRoles");
 
                     b.HasData(
-                        new { UserId = "d8a87448-a3a2-4ed4-b9c5-77bc347e2599", RoleId = "dfee16f6-d8bc-4e6f-a514-46c4d15bc940" }
+                        new { UserId = "1ba4f783-d416-4f73-b840-86ece38f0330", RoleId = "2db302a1-f537-45fe-9caa-acded270c7f0" }
                     );
                 });
 
