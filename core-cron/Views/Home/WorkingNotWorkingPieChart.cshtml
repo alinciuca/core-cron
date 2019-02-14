@@ -1,0 +1,32 @@
+﻿@using Core.Cron.Models
+@using Kendo.Mvc.UI
+
+<div class="k-content wide">
+	@(Html.Kendo().Chart<ChartViewModel>()
+			   .Name("chart")
+					   .Title(title => title
+						   .Text("Working vs not working services")
+						   .Position(ChartTitlePosition.Bottom))
+			   .Legend(legend => legend
+				   .Visible(false)
+			   )
+			   .ChartArea(chart => chart
+				   .Background("transparent")
+				)
+				.DataSource(ds => ds.Read(r => r.Action("Read_WorkingNotWorkingServices", "Home")))
+			   .Series(series =>
+			   {
+				   series.Pie("Value", "Category")
+				   .Labels(labels => labels
+					   .Template("#= category # #= kendo.format('{0:p}', percentage)#")
+					   .Background("transparent")
+					   .Visible(true)
+				   )
+				   .StartAngle(150);
+			   })
+			   .Tooltip(tooltip => tooltip
+				   .Visible(true)
+				   .Format("0 - services")
+			   ).Theme("Bootstrap")
+	)
+</div>

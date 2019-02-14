@@ -17,48 +17,10 @@
 }
 else
 {
-	@(Html.Kendo().Grid<ServiceView>().Name("grid")
-					.Sortable()
-					.Filterable()
-					.Editable()
-					.Scrollable()
-					.ToolBar(x => x.Create())
-					.Columns(columns =>
-					{
-						columns.Bound(col => col.ServiceId).Hidden();
-						columns.Bound(column => column.ServiceName).ClientTemplate("<div style='width=100%;margin: 0 auto;cursor: pointer;' title='#=HeartbeatTooltip#'><span style='display: inline-block; background: #= HeartBeatColor#; width:10px; height: 10px; border-radius: 5px; '></span>&nbsp;#=ServiceName#</div>");
-						columns.Bound(column => column.ServiceIdentifier).Sortable(false);
-						columns.Bound(column => column.UpdateFrequencyInMinutes).Title("Frequency(minutes)");
-						columns.Command(column =>
-						{
-							column.Edit();
-							column.Destroy();
-						});
-					})
-					.DataSource(ds =>
-					ds.Ajax()
-					.Sort(s => s.Add("DateAdded").Descending())
-					.Read(r => r.Action("Read", "Home").Data("forgeryToken"))
-					.Create(r => r.Action("Create", "Home").Data("forgeryToken"))
-					.Update(r => r.Action("Update", "Home").Data("forgeryToken"))
-					.Destroy(r => r.Action("Delete", "Home").Data("forgeryToken"))
-					.Model(m =>
-					{
-						m.Id(id => id.ServiceId);
-						m.Field(s => s.ServiceName).Editable(true);
-						m.Field(s => s.ServiceIdentifier).Editable(false);
-						m.Field(s => s.DateAdded).Editable(false);
-						m.Field(s => s.RowVersion).Editable(false);
-						m.Field(s => s.LastUpdate).Editable(false);
-						m.Field(s => s.UpdateFrequencyInMinutes).Editable(false);
-					})
-						.PageSize(10)
-					)
-					.Pageable()
-	)
+	await Html.RenderPartialAsync("WorkingNotWorkingPieChart");
 }
 <script>
-    function forgeryToken() {
-        return kendo.antiForgeryTokens();
-    }
+	function forgeryToken() {
+		return kendo.antiForgeryTokens();
+	}
 </script>

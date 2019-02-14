@@ -1,0 +1,96 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Core.Cron.Data
+@using Kendo.Mvc.UI
+
+@inject SignInManager<IdentityUser>	SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@Html.AntiForgeryToken()
+
+@{
+	ViewData["Title"] = "Services";
+}
+
+@if (!SignInManager.IsSignedIn(User))
+{
+	<h3>Please login</h3>
+}
+else
+{
+	@(Html.Kendo().Grid<ServiceView>().Name("grid")
+							.Sortable()
+							.Filterable()
+							.Editable()
+							.Events(e => e.Remove("showDialog"))
+							.Scrollable()
+							.ToolBar(x => x.Create())
+							.Columns(columns =>
+							{
+								columns.Bound(col => col.ServiceId).Hidden();
+								columns.Bound(column => column.ServiceName).ClientTemplate("<div style='width=100%;margin: 0 auto;cursor: pointer;' title='#=HeartbeatTooltip#'><span style='display: inline-block; background: #= HeartBeatColor#; width:10px; height: 10px; border-radius: 5px; '></span>&nbsp;#=ServiceName#</div>");
+								columns.Bound(column => column.ServiceIdentifier).Sortable(false);
+								columns.Bound(column => column.UpdateFrequencyInMinutes).Title("Frequency(minutes)");
+								columns.Command(column =>
+								{
+									column.Edit();
+									column.Destroy().Template("<a class='k-button k-button-icon-text' onclick='showDialog();'><span class='k-icon k-i-delete'></span>Delete</a>");
+								});
+							})
+							.DataSource(ds =>
+							ds.Ajax()
+							.Sort(s => s.Add("DateAdded").Descending())
+							.Read(r => r.Action("Read", "Service").Data("forgeryToken"))
+							.Create(r => r.Action("Create", "Service").Data("forgeryToken"))
+							.Update(r => r.Action("Update", "Service").Data("forgeryToken"))
+							.Destroy(r => r.Action("Delete", "Service").Data("forgeryToken"))
+							.Model(m =>
+							{
+								m.Id(id => id.ServiceId);
+								m.Field(s => s.ServiceName).Editable(true);
+								m.Field(s => s.ServiceIdentifier).Editable(false);
+								m.Field(s => s.DateAdded).Editable(false);
+								m.Field(s => s.RowVersion).Editable(false);
+								m.Field(s => s.LastUpdate).Editable(false);
+								m.Field(s => s.UpdateFrequencyInMinutes).Editable(false);
+							})
+								.PageSize(10)
+							)
+							.Pageable()
+	)
+}
+<script>
+	function forgeryToken() {
+		return kendo.antiForgeryTokens();
+	}
+
+	function onDelete(e) {
+		e.preventDefault();
+	}
+
+	function onClose() {
+		$("#showDialogBtn").fadeIn();
+	}
+
+	function onOpen() {
+		$("#showDialogBtn").fadeOut();
+	}
+
+	function showDialog() {
+		$('#DeleteConfirmation').data("kendoDialog").open();
+	}
+</script>
+
+@(Html.Kendo().Dialog()
+			.Name("DeleteConfirmation")
+			.Title("Delete service")
+			.Content("<p class='text-center'>Are you sure?<p>")
+			.Width(300)
+			.Modal(true)
+			.Actions(actions =>
+			{
+				actions.Add().Text("Yes").Primary(true);
+				actions.Add().Text("No").Action("onClose");
+			})
+			.Events(ev => ev.Close("onClose").Open("onOpen"))
+			.Visible(false)
+)
