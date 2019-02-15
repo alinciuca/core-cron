@@ -4,8 +4,10 @@ using Core.Cron.Models;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,11 +28,10 @@ namespace Core.Cron.Controllers
         }
 
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Read([DataSourceRequest] DataSourceRequest request)
+        public async Task<JsonResult> Read([DataSourceRequest] DataSourceRequest request)
         {
             DataSourceResult results = await _context.ServiceView.ToDataSourceResultAsync(request).ConfigureAwait(false);
-            var json = JsonConvert.SerializeObject(results, Formatting.None);
-            return new ContentResult { Content = json, ContentType = Constants.JSON_MIME };
+            return Json(results);
         }
 
         [ValidateAntiForgeryToken]
@@ -74,6 +75,22 @@ namespace Core.Cron.Controllers
             var result = await new[] { service }.ToDataSourceResultAsync(request).ConfigureAwait(false);
             var json = JsonConvert.SerializeObject(result);
             return new ContentResult { Content = json, ContentType = Constants.JSON_MIME };
+        }
+
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Heartbeats(int serviceId)
+        {
+            var heartbeats = await _context.Heartbeat.Where(s => s.ServiceId == serviceId).GroupBy(s => s.LastUpdate.Date).ToArrayAsync().ConfigureAwait(false);
+            var viewModel = new List<ChartViewModelWithDate>();
+            foreach (var group in heartbeats)
+            {
+                viewModel.Add(new ChartViewModelWithDate
+                {
+                    Date = group.Key,
+                    Value = group.Count()
+                });
+            }
+            return View(viewModel);
         }
 
         [ValidateAntiForgeryToken]

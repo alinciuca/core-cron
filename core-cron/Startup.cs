@@ -74,6 +74,10 @@ namespace Core.Cron
                 routes.MapRoute(
                     name: "services",
                     template: "{controller=Service}/{action=Index}");
+
+                routes.MapRoute(
+                 name: "heartbeats",
+                 template: "{controller=Service}/{action=Heartbeats}");
             });
 
 			app.UseSwagger();

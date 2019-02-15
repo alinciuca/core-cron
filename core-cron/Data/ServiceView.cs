@@ -19,7 +19,7 @@ namespace Core.Cron.Data
         public bool IsAlive => DeltaTime.TotalMinutes <= UpdateFrequencyInMinutes;
 
         [NotMapped]
-        public string HeartBeatColor => IsAlive ? "green" : "red";
+        public string HeartbeatColor => IsAlive ? "green" : "red";
 
         [NotMapped]
         private string TimeOff

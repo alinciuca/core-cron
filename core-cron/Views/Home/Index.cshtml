@@ -17,8 +17,14 @@
 }
 else
 {
-	await Html.RenderPartialAsync("WorkingNotWorkingPieChart");
-	await Html.RenderPartialAsync("RequestsPerService");
+	<div class="row">
+		<div class="col-md-6">
+			@{await Html.RenderPartialAsync("WorkingNotWorkingPieChart"); }
+		</div>
+		<div class="col-md-6">
+			@{await Html.RenderPartialAsync("RequestsPerService"); }
+		</div>
+	</div>
 }
 <script>
 	function forgeryToken() {

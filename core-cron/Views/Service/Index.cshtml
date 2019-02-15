@@ -17,50 +17,72 @@
 }
 else
 {
-	@(Html.Kendo().Grid<ServiceView>().Name("grid")
-		.Sortable()
-		.Filterable()
-		.Editable()
-		.Events(e => e.Remove("showDialog"))
-		.Scrollable()
-		.ToolBar(x => x.Create())
-		.Columns(columns =>
-		{
-			columns.Bound(col => col.ServiceId).Hidden();
-			columns.Bound(column => column.ServiceName).ClientTemplate("<div style='width=100%;margin: 0 auto;cursor: pointer;' title='#=HeartbeatTooltip#'><span style='display: inline-block; background: #= HeartBeatColor#; width:10px; height: 10px; border-radius: 5px; '></span>&nbsp;#=ServiceName#</div>");
-			columns.Bound(column => column.ServiceIdentifier).Sortable(false);
-			columns.Bound(column => column.UpdateFrequencyInMinutes).Title("Frequency(minutes)");
-			columns.Command(column =>
-			{
-				column.Edit();
-				column.Custom("Delete").Click("showDialog");
-			});
-		})
-		.DataSource(ds =>
-		ds.Ajax()
-		.Sort(s => s.Add("DateAdded").Descending())
-		.Read(r => r.Action("Read", "Service").Data("forgeryToken"))
-		.Create(r => r.Action("Create", "Service").Data("forgeryToken"))
-		.Update(r => r.Action("Update", "Service").Data("forgeryToken"))
-		.Destroy(r => r.Action("Delete", "Service").Data("forgeryToken"))
-		.Model(m =>
-		{
-			m.Id(id => id.ServiceId);
-			m.Field(s => s.ServiceName).Editable(true);
-			m.Field(s => s.ServiceIdentifier).Editable(false);
-			m.Field(s => s.DateAdded).Editable(false);
-			m.Field(s => s.RowVersion).Editable(false);
-			m.Field(s => s.LastUpdate).Editable(false);
-			m.Field(s => s.UpdateFrequencyInMinutes).Editable(false);
-		})
-			.PageSize(10)
-		)
-		.Pageable()
-	)
+	<div id="ServicesGrid"></div>
 }
 <script>
+	$(document).ready(function () {
+		$("#ServicesGrid").kendoGrid({
+			dataSource: {
+				transport: {
+					read: {
+						url: "Service/Read",
+						dataType: "json",
+						type: "POST",
+						data: function () {
+							return kendo.antiForgeryTokens();
+						}
+					},
+					update: {
+						url: "Service/Update",
+						dataType: "json",
+						type: "POST",
+						data
+					}
+				}, schema: {
+					data: "data",
+					model: {
+						id: "serviceId",
+						fields: {
+							serviceId: { type: "number", editable: false },
+							serviceName: { type: "string" },
+							serviceIdentifier: { type: "string", editable: false },
+							dateAdded: { type: "date", editable: false },
+							rowVersion: { type: "string", editable: false },
+							updateFrequencyInMinutes: { type: "int", editable: false },
+							heartbeatColor: { type: "string" },
+							heartbeatTooltip: { type: "string" }
+						}
+					}
+				},
+				pageSize: 20,
+				serverPaging: true,
+				serverFiltering: true,
+				serverSorting: true
+			},
+			height: 550,
+			filterable: true,
+			sortable: true,
+			pageable: true,
+			columns: [
+				{
+					field: "serviceName",
+					title: "Service Name",
+					template: "<span style='width:100%;cursor: pointer;'  title='#=heartbeatTooltip#'><span style='display: inline-block; background: #= heartbeatColor#; width:10px; height: 10px; border-radius: 5px;'></span> #=serviceName#</span>"
+				},
+				{ field: "serviceIdentifier", title: "Id" }, { field: "updateFrequencyInMinutes", title: "Update Frequency (minutes)" },
+				{command: ["edit", "destroy"], title: "&nbsp" }],
+			editable: "inline"
+		});
+	});
+
 	function forgeryToken() {
 		return kendo.antiForgeryTokens();
+	}
+
+	function goToHeartbeats(e) {
+		e.preventDefault();
+		var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+		$("#HeartbeatWindow").data("kendoWindow").open();
 	}
 
 	function onDelete(e) {
@@ -86,18 +108,3 @@ else
 		console.log(dataItem);
 	}
 </script>
-
-@(Html.Kendo().Dialog()
-			.Name("DeleteConfirmation")
-			.Title("Delete service")
-			.Content("<p class='text-center'>Are you sure?<p>")
-			.Width(300)
-			.Modal(true)
-			.Actions(actions =>
-			{
-				actions.Add().Text("Yes").Action("deleteLine").Primary(true);
-				actions.Add().Text("No").Action("onClose");
-			})
-			.Events(ev => ev.Close("onClose").Open("onOpen"))
-			.Visible(false)
-)
