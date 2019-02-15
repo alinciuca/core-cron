@@ -1,12 +1,12 @@
 ﻿using Core.Cron.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Core.Cron.Controllers
 {
-	[Route("api/[Controller]")]
+    [Route("api/[Controller]")]
 	[ApiController]
 	public class ServiceApiController : ControllerBase
 	{
@@ -25,7 +25,7 @@ namespace Core.Cron.Controllers
 				return BadRequest("Identifier missing!");
 			}
 
-			var match = _context.Service.FirstOrDefault(s => s.ServiceIdentifier == identifier);
+			var match = await _context.Service.FirstOrDefaultAsync(s => s.ServiceIdentifier == identifier).ConfigureAwait(false);
 			if (match == null)
 			{
 				return NotFound();

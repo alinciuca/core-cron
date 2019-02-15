@@ -56,6 +56,25 @@ namespace Core.Cron.Controllers
         }
 
         [Authorize]
+        public async Task<IActionResult> Read_RequestsPerService()
+        {
+            var groups = await _context.Heartbeat.Include(s => s.Service).GroupBy(s => s.Service.ServiceName).ToArrayAsync().ConfigureAwait(false);
+            var viewModel = new List<ChartViewModel>();
+            foreach(var group in groups)
+            {
+                var chartViewModel = new ChartViewModel
+                {
+                    Category = group.Key,
+                    Value = group.Count()
+                };
+                viewModel.Add(chartViewModel);
+            }
+
+            var json = JsonConvert.SerializeObject(viewModel);
+            return new ContentResult { Content = json, ContentType = Constants.JSON_MIME };
+        }
+
+        [Authorize]
         public IActionResult Privacy()
         {
             return View();

@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Core.Cron.Data;
+﻿using Core.Cron.Data;
 using Core.Cron.Logic;
 using Core.Cron.Models;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Core.Cron.Controllers
 {
@@ -71,6 +70,7 @@ namespace Core.Cron.Controllers
             existingService.ServiceName = service.ServiceName;
             await _context.SaveChangesAsync().ConfigureAwait(false);
             service.RowVersion = existingService.RowVersion;
+
             var result = await new[] { service }.ToDataSourceResultAsync(request).ConfigureAwait(false);
             var json = JsonConvert.SerializeObject(result);
             return new ContentResult { Content = json, ContentType = Constants.JSON_MIME };

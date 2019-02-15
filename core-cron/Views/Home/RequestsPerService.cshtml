@@ -1,0 +1,32 @@
+﻿@using Core.Cron.Models
+@using Kendo.Mvc.UI
+<div class="k-content wide">
+	@(Html.Kendo().Chart<ChartViewModel>()
+					.Name("RequestsPerService")
+					.Title("Requests per service")
+					.Legend(legend => legend
+						.Visible(false)
+					)
+					.ChartArea(chartArea => chartArea
+						.Background("transparent")
+					)
+					.DataSource(ds => ds.Read(r => r.Action("Read_RequestsPerService", "Home")))
+					.Series(series =>
+					{
+						series.Bar(s => s.Value).Name("Total Requests");
+					})
+					.CategoryAxis(axis => axis
+						.Categories(s => s.Category)
+						.MajorGridLines(lines => lines.Visible(false))
+					)
+					.ValueAxis(axis => axis
+						.Numeric()
+						.Line(line => line.Visible(false))
+						.MajorGridLines(lines => lines.Visible(true))
+					)
+					.Tooltip(tooltip => tooltip
+						.Visible(true)
+						.Template("#= series.name #: #= value #")
+					).Theme("Fiori")
+	)
+</div>

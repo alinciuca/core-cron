@@ -13,15 +13,34 @@ namespace Core.Cron.Data
         public DateTimeOffset LastUpdate { get; set; }
         public int UpdateFrequencyInMinutes { get; set; }
 
-        private int DeltaTime => (DateTimeOffset.UtcNow - LastUpdate.ToUniversalTime()).Minutes;
+        private TimeSpan DeltaTime => DateTimeOffset.UtcNow - LastUpdate.ToUniversalTime();
 
         [NotMapped]
-        public bool IsAlive => DeltaTime <= UpdateFrequencyInMinutes;
+        public bool IsAlive => DeltaTime.TotalMinutes <= UpdateFrequencyInMinutes;
 
         [NotMapped]
         public string HeartBeatColor => IsAlive ? "green" : "red";
 
         [NotMapped]
-        public string HeartbeatTooltip => !IsAlive ? $"Service has stopped responding {DeltaTime - UpdateFrequencyInMinutes} minutes ago" : "Service is working normally";
+        private string TimeOff
+        {
+            get
+            {
+                var totalMinutes = DeltaTime.TotalMinutes - UpdateFrequencyInMinutes;
+                var hours = (int)(totalMinutes / 60);
+                if (hours > 24)
+                {
+                    return "more than 24 hours ago";
+                }
+                if (hours <= 24 && hours > 0)
+                {
+                    return $"{hours} hours ago";
+                }
+                return $"{(int)totalMinutes} minutes ago";
+            }
+        }
+
+        [NotMapped]
+        public string HeartbeatTooltip => !IsAlive ? $"Service has stopped responding {TimeOff}" : "Service is working normally";
     }
 }
