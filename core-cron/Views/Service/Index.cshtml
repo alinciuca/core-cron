@@ -18,48 +18,61 @@
 else
 {
 	<div id="ServicesGrid"></div>
+	<div id="confirmationDeleteDialog"></div>
 }
 <script>
 	$(document).ready(function () {
-		$("#ServicesGrid").kendoGrid({
-			dataSource: {
-				transport: {
-					read: {
-						url: "Service/Read",
-						dataType: "json",
-						type: "POST",
-						data: function () {
-							return kendo.antiForgeryTokens();
-						}
-					},
-					update: {
-						url: "Service/Update",
-						dataType: "json",
-						type: "POST",
-						data
-					}
-				}, schema: {
-					data: "data",
-					model: {
-						id: "serviceId",
-						fields: {
-							serviceId: { type: "number", editable: false },
-							serviceName: { type: "string" },
-							serviceIdentifier: { type: "string", editable: false },
-							dateAdded: { type: "date", editable: false },
-							rowVersion: { type: "string", editable: false },
-							updateFrequencyInMinutes: { type: "int", editable: false },
-							heartbeatColor: { type: "string" },
-							heartbeatTooltip: { type: "string" }
-						}
+		var dataSource = new kendo.data.DataSource({
+			transport: {
+				read: {
+					url: "Service/Read",
+					dataType: "json",
+					type: "POST",
+					data: function () {
+						return kendo.antiForgeryTokens();
 					}
 				},
-				pageSize: 20,
-				serverPaging: true,
-				serverFiltering: true,
-				serverSorting: true
+				create: {
+					url: "Service/Create",
+					dataType: "json",
+					type: "POST",
+					data: function () {
+						return kendo.antiForgeryTokens();
+					}
+				},
+				destroy: {
+					url: "Service/Delete",
+					dataType: "json",
+					type: "POST",
+					data: function () {
+						return kendo.antiForgeryTokens();
+					}
+				}
+			}, schema: {
+				data: "data",
+				model: {
+					id: "serviceId",
+					fields: {
+						serviceId: { type: "number", editable: false },
+						serviceName: { type: "string" },
+						serviceIdentifier: { type: "string", editable: false },
+						dateAdded: { type: "date", editable: false },
+						rowVersion: { type: "string", editable: false },
+						updateFrequencyInMinutes: { type: "int", editable: false },
+						heartbeatColor: { type: "string" },
+						heartbeatTooltip: { type: "string" }
+					}
+				}
 			},
-			height: 550,
+			pageSize: 40,
+			serverPaging: true,
+			serverFiltering: true,
+			serverSorting: true
+			});
+		$("#ServicesGrid").kendoGrid({
+			toolbar: ["create"],
+			dataSource: dataSource,
+			height: 800,
 			filterable: true,
 			sortable: true,
 			pageable: true,
@@ -70,8 +83,24 @@ else
 					template: "<span style='width:100%;cursor: pointer;'  title='#=heartbeatTooltip#'><span style='display: inline-block; background: #= heartbeatColor#; width:10px; height: 10px; border-radius: 5px;'></span> #=serviceName#</span>"
 				},
 				{ field: "serviceIdentifier", title: "Id" }, { field: "updateFrequencyInMinutes", title: "Update Frequency (minutes)" },
-				{command: ["edit", "destroy"], title: "&nbsp" }],
+				{ command: ["edit", "destroy"], title: "&nbsp" }],
 			editable: "inline"
+		});
+
+		var confirmationDeleteDialog = $('#confirmationDeleteDialog');
+		
+		confirmationDeleteDialog.kendoDialog({
+			width: "450px",
+			title: "Confirm delete",
+			closable: true,
+			modal: false,
+			visible: false,
+			content: "<p class='text-center'>Are you sure?",
+			actions: [
+				{ text: 'Yes', primary: true },
+				{ text: 'No' }
+			],
+			close: onClose
 		});
 	});
 

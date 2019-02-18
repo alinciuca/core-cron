@@ -41,15 +41,8 @@ namespace Core.Cron.Controllers
             await _context.Service.AddAsync(newService).ConfigureAwait(false);
             await _context.SaveChangesAsync().ConfigureAwait(false);
 
-            service.ServiceId = newService.ServiceId;
-            service.ServiceIdentifier = newService.ServiceIdentifier;
-            service.DateAdded = newService.DateAdded;
-            service.RowVersion = newService.RowVersion;
-
-            var result = await new[] { service }.ToDataSourceResultAsync(request).ConfigureAwait(false);
-            var json = JsonConvert.SerializeObject(result);
-
-            return new ContentResult { Content = json, ContentType = Constants.JSON_MIME };
+            var serviceView = await _context.ServiceView.ToDataSourceResultAsync(request).ConfigureAwait(false);
+            return Ok(serviceView);
         }
 
         [ValidateAntiForgeryToken]
@@ -106,7 +99,7 @@ namespace Core.Cron.Controllers
             _context.Service.Remove(existingService);
             await _context.SaveChangesAsync().ConfigureAwait(false);
 
-            return new ContentResult();
+            return Ok(existingService);
         }
     }
 }

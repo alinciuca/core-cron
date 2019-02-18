@@ -10,10 +10,10 @@ namespace Core.Cron.Data
         public string ServiceIdentifier { get; set; }
         public DateTimeOffset DateAdded { get; set; }
         public byte[] RowVersion { get; set; }
-        public DateTimeOffset LastUpdate { get; set; }
-        public int UpdateFrequencyInMinutes { get; set; }
+        public DateTimeOffset? LastUpdate { get; set; }
+        public int? UpdateFrequencyInMinutes { get; set; }
 
-        private TimeSpan DeltaTime => DateTimeOffset.UtcNow - LastUpdate.ToUniversalTime();
+        private TimeSpan DeltaTime => LastUpdate.HasValue ? DateTimeOffset.UtcNow - LastUpdate.Value.ToUniversalTime() : new TimeSpan();
 
         [NotMapped]
         public bool IsAlive => DeltaTime.TotalMinutes <= UpdateFrequencyInMinutes;
@@ -26,8 +26,13 @@ namespace Core.Cron.Data
         {
             get
             {
-                var totalMinutes = DeltaTime.TotalMinutes - UpdateFrequencyInMinutes;
-                var hours = (int)(totalMinutes / 60);
+                var totalMinutes = 0;
+
+                if (UpdateFrequencyInMinutes.HasValue)
+                {
+                    totalMinutes = (int)DeltaTime.TotalMinutes - UpdateFrequencyInMinutes.Value;
+                }
+                var hours = totalMinutes / 60;
                 if (hours > 24)
                 {
                     return "more than 24 hours ago";
@@ -36,7 +41,7 @@ namespace Core.Cron.Data
                 {
                     return $"{hours} hours ago";
                 }
-                return $"{(int)totalMinutes} minutes ago";
+                return $"{totalMinutes} minutes ago";
             }
         }
 
